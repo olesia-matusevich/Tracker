@@ -39,11 +39,19 @@ class CustomTableViewCell: UITableViewCell {
         return stackView
     }()
     
+    let separatorView: UIView = {
+        let view = UIView()
+        view.backgroundColor = UIColor.castomGray // Цвет разделителя
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         contentView.addSubview(stackView)
         contentView.addSubview(customImageView)
+        contentView.addSubview(separatorView)
         
         stackView.addArrangedSubview(customLabel)
         stackView.addArrangedSubview(detailLabel)
@@ -57,12 +65,22 @@ class CustomTableViewCell: UITableViewCell {
             customImageView.widthAnchor.constraint(equalToConstant: 24),
             customImageView.heightAnchor.constraint(equalToConstant: 24),
             
-            stackView.trailingAnchor.constraint(equalTo: customImageView.leadingAnchor, constant: -8)
+            stackView.trailingAnchor.constraint(equalTo: customImageView.leadingAnchor, constant: -8),
+            
+            separatorView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16), // Отступ слева
+            separatorView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16), // Отступ справа
+            separatorView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            separatorView.heightAnchor.constraint(equalToConstant: 0.5) // Высота разделителя
+                  
         ])
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    func hideSeparator(_ hide: Bool) {
+        separatorView.isHidden = hide
     }
 }
 

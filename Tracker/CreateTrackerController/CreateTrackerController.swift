@@ -7,7 +7,7 @@
 
 import UIKit
 
-class CreateTrackerController: UIViewController {
+final class CreateTrackerController: UIViewController {
     
     // MARK: - Private properties
     
@@ -28,7 +28,7 @@ class CreateTrackerController: UIViewController {
         return label
     }()
     
-    private var nameNewTracker: UITextField = {
+    private lazy var nameNewTracker: UITextField = {
         var textField = UITextField()
         textField.placeholder = "Введите название трекера"
         textField.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: 0))
@@ -90,7 +90,7 @@ class CreateTrackerController: UIViewController {
     private var nameIsEmpty: Bool = true
     
     private var selectedCategory: String = "Важное"
-    private var selectedemoji: String = "😀"
+    private var selectedEmoji: String = "😀"
     private var selectedColor: UIColor = .castomPurple
     private var selectedDays: [String] = []
     
@@ -112,6 +112,7 @@ class CreateTrackerController: UIViewController {
     init(needSchedule: Bool) {
         super.init(nibName: nil, bundle: nil)
         if needSchedule {
+            self.needSchedule = true
             options.append("Расписание")
         }
     }
@@ -147,8 +148,8 @@ class CreateTrackerController: UIViewController {
         
         tableView.frame = view.bounds
         tableView.rowHeight = 80
-        tableView.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
-        
+        //tableView.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
+        tableView.separatorStyle = .none
         view.addSubview(tableView)
     }
     
@@ -195,7 +196,6 @@ class CreateTrackerController: UIViewController {
             limitLabel.topAnchor.constraint(equalTo: nameNewTracker.bottomAnchor, constant: 8),
             limitLabel.centerXAnchor.constraint(equalTo: nameNewTracker.centerXAnchor),
             
-            //tableView.topAnchor.constraint(equalTo: nameNewTracker.bottomAnchor, constant: 24),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             tableView.heightAnchor.constraint(equalToConstant: 200),
@@ -209,19 +209,18 @@ class CreateTrackerController: UIViewController {
         
         tableViewTopConstraint = tableView.topAnchor.constraint(equalTo: nameNewTracker.bottomAnchor, constant: 24)
         tableViewTopConstraint?.isActive = true
-        
     }
     
     // MARK: - Public methods
     
     func createTracker() -> TrackerCategory {
-        var days = scheduleItems.allCases.compactMap {
+        let days = ScheduleItems.allCases.compactMap {
             item in
             self.selectedDays.contains(item.rawValue) ? item : nil
         }
         
         let tracker = Tracker(name: nameNewTracker.text ?? "Новый трекер",
-                              emoji: selectedemoji,
+                              emoji: selectedEmoji,
                               schedule: days,
                               color: selectedColor)
         let category = TrackerCategory(name: selectedCategory, trackers: [tracker])
@@ -262,10 +261,12 @@ extension CreateTrackerController: UITableViewDataSource {
         // закругление ячеек
         if options.count == 1 {
             cell.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner, .layerMinXMaxYCorner, .layerMaxXMaxYCorner]
+            cell.hideSeparator(true)
         } else if indexPath.row == 0 {
             cell.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         } else if indexPath.row == options.count - 1 {
             cell.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
+            cell.hideSeparator(true)
         }
         cell.selectionStyle = .none
         return cell
@@ -296,6 +297,7 @@ extension CreateTrackerController: UITextFieldDelegate {
         let newText = (text as NSString).replacingCharacters(in: range, with: string)
         nameIsEmpty = newText.isEmpty
         
+        checkFilling()
         return limitNotReached
     }
     
@@ -316,6 +318,11 @@ extension CreateTrackerController: UITextFieldDelegate {
         UIView.animate(withDuration: 0.3) {
             self.view.layoutIfNeeded()
         }
+    }
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        checkFilling()
+        textField.resignFirstResponder()
+        return true
     }
 }
 

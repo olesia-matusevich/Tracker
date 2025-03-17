@@ -11,11 +11,11 @@ struct Tracker: Identifiable {
     let id: UUID = UUID()
     let name: String
     let emoji: String
-    let schedule: [scheduleItems]?
+    let schedule: [ScheduleItems]?
     let color: UIColor
 }
 
-enum scheduleItems: String, CaseIterable {
+enum ScheduleItems: String, CaseIterable {
     case Monday = "Понедельник"
     case Tuesday = "Вторник"
     case Wednesday = "Среда"

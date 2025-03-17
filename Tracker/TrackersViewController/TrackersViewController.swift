@@ -24,7 +24,7 @@ final class TrackersViewController: UIViewController, UICollectionViewDelegate {
         label.textAlignment = .center
         label.font = UIFont.systemFont(ofSize: 17)
         label.textColor = .black
-        label.backgroundColor = .castomGrayBackground
+        label.backgroundColor = .castomGrayDatePicker
         label.layer.cornerRadius = 8
         label.layer.masksToBounds = true
         return label
@@ -33,10 +33,7 @@ final class TrackersViewController: UIViewController, UICollectionViewDelegate {
     private lazy var datePicker: UIDatePicker = {
         let picker = UIDatePicker()
         picker.datePickerMode = .date
-        picker.preferredDatePickerStyle = .inline
-        // пояснение для ревьюера по поводу  picker.preferredDatePickerStyle = .inline, а не .compact
-        // я как и многие столкнулась с проблемой, что при picker.preferredDatePickerStyle = .inline намного проще кастомизаровать контейнер с календарем, чтобы он соотвествовал макету. По совету куратора пишу тебе здесь. Зачем изобретать велосибед, если по дефолту все так хорошо работает.
-        //Прошу, пощади! (знаю, что ты можешь принять такой вариант 🥹)
+        picker.preferredDatePickerStyle = .compact
         picker.locale = Locale(identifier: "ru_Ru")
         picker.backgroundColor = .white
         picker.calendar.firstWeekday = 2
@@ -46,9 +43,11 @@ final class TrackersViewController: UIViewController, UICollectionViewDelegate {
         picker.layer.cornerRadius = 13
         picker.layer.masksToBounds = true
         picker.date = Date()
+        picker.addTarget(self, action: #selector(dateChanged(_:)), for: .valueChanged)
         return picker
     }()
     
+    private let datePickerContainer = UIView()
     private lazy var dateFormatter = DateFormatter()
     
     private lazy var plusButton: UIButton = {
@@ -146,23 +145,9 @@ final class TrackersViewController: UIViewController, UICollectionViewDelegate {
     
     // MARK: - @objc Methods
     
-    @objc func dateLabelTapped(_ sender: UITapGestureRecognizer) {
-        
-        if !datePicker.isDescendant(of: view) {
-            view.addSubview(datePicker)
-            
-            NSLayoutConstraint.activate([
-                datePicker.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-                datePicker.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: 100)
-            ])
-            datePicker.addTarget(self, action: #selector(dateChanged(_:)), for: .valueChanged)
-        }
-    }
-    
     @objc func dateChanged(_ sender: UIDatePicker) {
         dateLabel.text = dateFormatter.string(from: datePicker.date)
         currentDate = datePicker.date
-        datePicker.removeFromSuperview()
         updateFilteredTrackers()
     }
     
@@ -174,13 +159,9 @@ final class TrackersViewController: UIViewController, UICollectionViewDelegate {
     // MARK: - Private Methods
     
     private func setupDateLabel() {
-        dateFormatter.dateStyle = .medium
+        dateFormatter.dateStyle = .short
         dateFormatter.dateFormat = "dd.MM.yy"
-        dateLabel.text = dateFormatter.string(from: Date())
-        
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.dateLabelTapped(_:)))
-        dateLabel.isUserInteractionEnabled = true
-        dateLabel.addGestureRecognizer(tapGesture)
+        dateLabel.text = dateFormatter.string(from: datePicker.date)
     }
     
     private func updateFilteredTrackers() {
@@ -252,7 +233,6 @@ final class TrackersViewController: UIViewController, UICollectionViewDelegate {
             collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 50),
         ])
-        
     }
     
     private func setupNoTrackersImage(emptySearch: Bool) {
@@ -282,7 +262,7 @@ final class TrackersViewController: UIViewController, UICollectionViewDelegate {
     }
     
     private func setupViews() {
-        [titleLabel, plusButton, searchBar, dateLabel].forEach {
+        [titleLabel, plusButton, searchBar, dateLabel, datePicker].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
             view.addSubview($0)
         }
@@ -294,11 +274,16 @@ final class TrackersViewController: UIViewController, UICollectionViewDelegate {
             plusButton.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 6),
             plusButton.heightAnchor.constraint(equalToConstant: 42),
             plusButton.widthAnchor.constraint(equalToConstant: 42),
+         
+            datePicker.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 5),
+            datePicker.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
+            datePicker.heightAnchor.constraint(equalToConstant: 34),
+            datePicker.widthAnchor.constraint(equalToConstant: 80),
             
             dateLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 5),
             dateLabel.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
             dateLabel.heightAnchor.constraint(equalToConstant: 34),
-            dateLabel.widthAnchor.constraint(equalToConstant: 77),
+            dateLabel.widthAnchor.constraint(equalToConstant: 80),
             
             titleLabel.topAnchor.constraint(equalTo: plusButton.bottomAnchor, constant: 1),
             titleLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
@@ -308,6 +293,8 @@ final class TrackersViewController: UIViewController, UICollectionViewDelegate {
             searchBar.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 7),
             searchBar.heightAnchor.constraint(equalToConstant: 36)
         ])
+        
+        view.bringSubviewToFront(dateLabel)
     }
     
     private func hideEmptyStub(){
