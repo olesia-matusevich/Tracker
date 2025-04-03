@@ -143,17 +143,13 @@ final class CreateTrackerController: UIViewController {
         return collectionView
     }()
     
-    
     private var needSchedule: Bool = false
     private var nameIsEmpty: Bool = true
     
     private var selectedCategory: String = "Важное"
     private var selectedEmoji: String = ""
     private var selectedColor: UIColor = .clear
-//    private var selectedEmoji: String?
-//    private var selectedColor: UIColor?
     private var selectedDays: [String] = []
-    private let trackerStore = TrackerStore()
     
     private var tableViewTopConstraint: NSLayoutConstraint?
     weak var createTrackerDelegate: CreateTrackerProtocol?
@@ -189,8 +185,6 @@ final class CreateTrackerController: UIViewController {
     }
     
     @objc func didTapCreateButton() {
-        //saveTracker() //для сохранения в CoreData
-        
         let data = createTracker()
         createTrackerDelegate?.addTracker(for: data)
         createTrackerDelegate?.cancelCreateTracker()
@@ -297,39 +291,23 @@ final class CreateTrackerController: UIViewController {
         tableViewTopConstraint?.isActive = true
     }
     
-    // MARK: - Public methods
-    
-    func createTracker() -> TrackerCategory {
-        let days = ScheduleItems.allCases.compactMap {
-            item in
-            self.selectedDays.contains(item.rawValue) ? item : nil
+    private func createTracker() -> TrackerCategory {
+        var days: [ScheduleItems] = []
+        
+        if !selectedDays.isEmpty {
+            days = ScheduleItems.allCases.compactMap {
+                item in
+                self.selectedDays.contains(item.rawValue) ? item : nil
+            }
         }
         
         let tracker = Tracker(name: nameNewTracker.text ?? "Новый трекер",
                               emoji: selectedEmoji,
-                              schedule: days,
+                              schedule: !selectedDays.isEmpty ? days : nil,
                               color: selectedColor)
         let category = TrackerCategory(name: selectedCategory, trackers: [tracker])
         return category
     }
-    
-//    func saveTracker() {
-//        let days = ScheduleItems.allCases.compactMap {
-//            item in
-//            self.selectedDays.contains(item.rawValue) ? item : nil
-//        }
-//        
-//        let tracker = Tracker(name: nameNewTracker.text ?? "Новый трекер",
-//                              emoji: selectedEmoji,
-//                              schedule: days,
-//                              color: selectedColor)
-//        let category = selectedCategory
-//        do {
-//            try trackerStore.addNewTracker(tracker, category: category)
-//        } catch {
-//            print(error)
-//        }
-//    }
 }
 
 // MARK: - UITableViewDataSource

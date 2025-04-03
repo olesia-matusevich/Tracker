@@ -32,7 +32,6 @@ final class TrackerCategoryStore {
             Result {
                 let fetchRequest: NSFetchRequest<TrackerCategoryCD> = TrackerCategoryCD.fetchRequest()
                 fetchRequest.predicate = NSPredicate(format: "name == %@", category)
-                
                 do {
                     let existingCategories = try context.fetch(fetchRequest)
                     if let existingCategory = existingCategories.first {
@@ -44,7 +43,7 @@ final class TrackerCategoryStore {
                         //try context.save()
                     }
                 } catch {
-                    print(error.localizedDescription)
+                    print("[TrackerCategoryStore - addNewTrackerCategory()] Ошибка при создании категории: \(error.localizedDescription)")
                 }
             }
         }

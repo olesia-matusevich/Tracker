@@ -95,18 +95,17 @@ final class TrackersViewController: UIViewController, UICollectionViewDelegate {
     private var collectionView: UICollectionView!
     private let trackerStore = TrackerStore()
     private let trackerRecordStore = TrackerRecordStore()
-   
+    
     private lazy var dataProvider: DataProviderProtocol? = {
         do {
             try dataProvider = DataProvider(trackerStore, delegate: self)
             guard let dataProvider else { return nil }
             return dataProvider
         } catch {
-            print("Данные недоступны.")
+            print("[TrackersViewController - dataProvider] Ошибка при создании dataProvider: \(error.localizedDescription)")
             return nil
         }
     }()
-    
     
     // MARK: - Overrides Methods
     
@@ -262,7 +261,7 @@ final class TrackersViewController: UIViewController, UICollectionViewDelegate {
         
         view.bringSubviewToFront(dateLabel)
     }
-    
+// для тестирования (удаление всех трекеров)
 //    func deleteAllTrackersAndCategories() {
 //        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
 //            return
@@ -296,16 +295,13 @@ final class TrackersViewController: UIViewController, UICollectionViewDelegate {
 
 extension TrackersViewController: UICollectionViewDataSource {
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        //return visibleCategories.count
-        
         return dataProvider?.numberOfSections ?? 0
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        //return visibleCategories[section].trackers.count
-        
-        let count = dataProvider?.numberOfItemsInSection(section) ?? 0
-        print("Количество элементов в секции \(section): \(count)")
+        // для тестирования
+//        let count = dataProvider?.numberOfItemsInSection(section) ?? 0
+//        print("Количество элементов в секции \(section): \(count)")
         
         return dataProvider?.numberOfItemsInSection(section) ?? 0
     }
@@ -367,7 +363,7 @@ extension TrackersViewController: CreateTrackerProtocol {
         do {
             try dataProvider?.addTracker(tracker, category: categoryName)
         } catch {
-            print("TrackersViewController.addTracker: \(error.localizedDescription)")
+            print("[TrackersViewController - addTracker()] Ошибка при создании трекера: \(error.localizedDescription)")
         }
     }
 }
@@ -385,7 +381,7 @@ extension TrackersViewController: TrackerCellDelegate {
         do {
            try trackerRecordStore.changeState(for: trackerRecord)
         } catch {
-            print(" Ошибка записи: \(error.localizedDescription)")
+            print("[TrackersViewController - trackerCompleated()] Ошибка при сохранении выполненного трекера: \(error.localizedDescription)")
         }
     }
     
@@ -432,12 +428,17 @@ extension TrackersViewController: DataProviderDelegate {
     }
     
     func didUpdate(_ update: TrackerStoreUpdate) {
-        collectionView.performBatchUpdates {
-            print("Обновление получено: \(update)")
-            collectionView.insertSections(update.insertedSections)
-            collectionView.deleteSections(update.deletedSections)
-            collectionView.insertItems(at: update.insertedIndexes)
-            collectionView.deleteItems(at: update.deletedIndexes)
-        }
+        
+        collectionView.reloadData()
+        
+        // когда я использую performBatchUpdates приложение падает. С причиной так и не удалось разобраться
+        
+//        collectionView.performBatchUpdates {
+//            print("Обновление получено: добавить секции: \(update.insertedSections), удалить секции: \(update.deletedSections), добавить элементы: \(update.insertedIndexes), удалить элементы: \(update.deletedIndexes)")
+//            collectionView.insertSections(update.insertedSections)
+//            collectionView.deleteSections(update.deletedSections)
+//            collectionView.insertItems(at: update.insertedIndexes)
+//            collectionView.deleteItems(at: update.deletedIndexes)
+//        }
     }
 }

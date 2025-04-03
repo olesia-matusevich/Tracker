@@ -53,13 +53,12 @@ final class TrackerStore: TrackerDataStore {
                 } else {
                     trackerCoreData.schedule = nil
                 }
-                
                 do {
-                    print("трекер добавлен \(String(describing: trackerCoreData.name))")
+//                    print("трекер добавлен \(String(describing: trackerCoreData.name))")
                     try trackerCategoryStore.addNewTrackerCategory(trackerCoreData, category: category)
                     try context.save()
                 } catch {
-                    print("Ошибка при сохранении контекста: \(error), \(error.localizedDescription)")
+                    print("[TrackerStore - addNewTracker()] Ошибка при создании трекера:: \(error), \(error.localizedDescription)")
                 }
             }
         }
@@ -69,7 +68,6 @@ final class TrackerStore: TrackerDataStore {
     var managedObjectContext: NSManagedObjectContext? {
         context
     }
-    
     
     func delete(_ record: NSManagedObject) throws {
         //TODO: доделать функцию для удаления

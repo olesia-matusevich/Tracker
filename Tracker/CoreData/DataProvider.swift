@@ -43,8 +43,11 @@ final class DataProvider: NSObject {
     private let dataStore: TrackerDataStore
     private var insertedIndexes: [IndexPath]
     private var deletedIndexes: [IndexPath]
-    private var insertedSections: IndexSet = IndexSet()
-    private var deletedSections: IndexSet = IndexSet()
+    private var insertedSections: IndexSet
+    private var deletedSections: IndexSet
+   
+    
+    private var newSectionIndex: Int = 0
     
     private lazy var fetchedResultsController: NSFetchedResultsController<TrackerCD> = {
 
@@ -98,7 +101,7 @@ extension DataProvider: DataProviderProtocol {
             try dataStore.addNewTracker(record, category: category)
             try fetchedResultsController.performFetch()
         } catch {
-            print("DataProvider.addTracker: \(error.localizedDescription)")
+            print("[DataProvider - addTracker()] Ошибка при создании трекера: \(error.localizedDescription)")
         }
     }
     
@@ -129,16 +132,12 @@ extension DataProvider: DataProviderProtocol {
         fetchedResultsController.fetchRequest.predicate = predicate
         do {
             try fetchedResultsController.performFetch()
-            print("Фильтрация выполнена. Количество разделов: \(fetchedResultsController.sections?.count ?? 0)")
-            for section in fetchedResultsController.sections ?? [] {
-                print("Раздел: \(section.name), количество элементов: \(section.numberOfObjects)")
-            }
             DispatchQueue.main.async {
                 self.delegate?.reloadCollectionView()
             }
         }
         catch {
-            print("ошибка фильтрации")
+            print("[DataProvider - filteredTrackers()] Ошибка при фильтрации: \(error.localizedDescription)")
         }
     }
 }
@@ -167,7 +166,6 @@ extension DataProvider: NSFetchedResultsControllerDelegate {
     }
     
     func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
-        
         switch type {
         case .delete:
             if let indexPath = indexPath {
@@ -176,6 +174,7 @@ extension DataProvider: NSFetchedResultsControllerDelegate {
         case .insert:
             if let indexPath = newIndexPath {
                 insertedIndexes.append(indexPath)
+//                print("Элемент вставлен: \(indexPath), секция: \(indexPath.section)")
             }
         default:
             break
@@ -186,10 +185,10 @@ extension DataProvider: NSFetchedResultsControllerDelegate {
         switch type {
         case .delete:
             deletedSections.insert(sectionIndex)
-            print("Раздел удален: \(sectionIndex), deletedSections: \(deletedSections)")
+//            print("Раздел удален: \(sectionIndex), deletedSections: \(deletedSections)")
         case .insert:
             insertedSections.insert(sectionIndex)
-            print("Раздел вставлен: \(sectionIndex), insertedSections: \(insertedSections)")
+//            print("Раздел вставлен: \(sectionIndex), insertedSections: \(insertedSections)")
         default:
             break
         }

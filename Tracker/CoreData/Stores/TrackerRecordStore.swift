@@ -23,6 +23,7 @@ final class TrackerRecordStore {
     }
     
     // MARK: - Private Methods
+    
     private func performSync<R>(_ action: (NSManagedObjectContext) -> Result<R, Error>) throws -> R {
         let context = self.context
         var result: Result<R, Error>!
@@ -37,7 +38,6 @@ final class TrackerRecordStore {
             Result {
                 let trackerRecordFetch = TrackerRecordCD.fetchRequest()
                 trackerRecordFetch.predicate = NSPredicate(format: "id == %@ AND date == %@", record.id as NSUUID, record.date as NSDate)
-                
                 let results = try context.fetch(trackerRecordFetch)
                 if results.isEmpty {
                     let trackerRecord = TrackerRecordCD(context: context)
@@ -82,7 +82,6 @@ final class TrackerRecordStore {
                 Result {
                     let trackerRecordFetch = TrackerRecordCD.fetchRequest()
                     trackerRecordFetch.resultType = .countResultType
-                    
                     trackerRecordFetch.predicate = NSPredicate(format: "id == %@", id as NSUUID)
                     let result = try context.count(for: trackerRecordFetch)
                     return result
@@ -90,7 +89,7 @@ final class TrackerRecordStore {
             }
         }
         catch {
-            print("Ошибка при подсчете записей: \(error.localizedDescription)")
+            print("[TrackerRecordStore - amountOfRecords(for:)] Ошибка при подсчете выполненных трекеров: \(error.localizedDescription)")
             return 0
         }
     }
