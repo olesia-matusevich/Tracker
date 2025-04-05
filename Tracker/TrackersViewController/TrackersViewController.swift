@@ -6,7 +6,6 @@
 //
 
 import UIKit
-//import CoreData
 
 final class TrackersViewController: UIViewController, UICollectionViewDelegate {
     
@@ -119,9 +118,8 @@ final class TrackersViewController: UIViewController, UICollectionViewDelegate {
         
         setupDateLabel()
         setupCollectionView()
-
-//       deleteAllTrackersAndCategories()
-        updateFilteredTrackers()
+        
+        //updateFilteredTrackers()
         setupPlaceholderImage(emptySearch: false)
     }
     
@@ -239,7 +237,7 @@ final class TrackersViewController: UIViewController, UICollectionViewDelegate {
             plusButton.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 6),
             plusButton.heightAnchor.constraint(equalToConstant: 42),
             plusButton.widthAnchor.constraint(equalToConstant: 42),
-         
+            
             datePicker.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 5),
             datePicker.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
             datePicker.heightAnchor.constraint(equalToConstant: 34),
@@ -261,34 +259,7 @@ final class TrackersViewController: UIViewController, UICollectionViewDelegate {
         
         view.bringSubviewToFront(dateLabel)
     }
-// для тестирования (удаление всех трекеров)
-//    func deleteAllTrackersAndCategories() {
-//        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
-//            return
-//        }
-//
-//        let context = appDelegate.persistentContainer.viewContext
-//
-//        let trackerFetchRequest: NSFetchRequest<TrackerCD> = TrackerCD.fetchRequest()
-//        let categoryFetchRequest: NSFetchRequest<TrackerCategoryCD> = TrackerCategoryCD.fetchRequest()
-//
-//        do {
-//            let trackers = try context.fetch(trackerFetchRequest)
-//            for tracker in trackers {
-//                context.delete(tracker)
-//            }
-//
-//            let categories = try context.fetch(categoryFetchRequest)
-//            for category in categories {
-//                context.delete(category)
-//            }
-//
-//            try context.save()
-//            print("Все трекеры и категории удалены")
-//        } catch {
-//            print("Ошибка при удалении трекеров и категорий: \(error)")
-//        }
-//    }
+   
 }
 
 // MARK: - UICollectionViewDataSource
@@ -299,15 +270,12 @@ extension TrackersViewController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        // для тестирования
-//        let count = dataProvider?.numberOfItemsInSection(section) ?? 0
-//        print("Количество элементов в секции \(section): \(count)")
-        
         return dataProvider?.numberOfItemsInSection(section) ?? 0
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TrackerCell.reuseIdentifier, for: indexPath) as! TrackerCell
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TrackerCell.reuseIdentifier, for: indexPath) as? TrackerCell
+        else { return UICollectionViewCell() }
         
         guard let tracker = dataProvider?.object(at: indexPath) else { return UICollectionViewCell() }
         
@@ -327,10 +295,9 @@ extension TrackersViewController: UICollectionViewDataSource {
         } else {
             cell.completeButton.backgroundColor = trackerColor
         }
-
         let countRecords = trackerRecordStore.amountOfRecords(for: trackerId)
         cell.daysCountLabel.text = cell.daysString(amoumnt: countRecords)
-
+        
         cell.delegate = self
         return cell
     }
@@ -341,7 +308,8 @@ extension TrackersViewController: UICollectionViewDataSource {
 extension TrackersViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         if kind == UICollectionView.elementKindSectionHeader {
-            let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: TrackerHeader.reuseIdentifier, for: indexPath) as! TrackerHeader
+            guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: TrackerHeader.reuseIdentifier, for: indexPath) as? TrackerHeader
+            else { return UICollectionReusableView() }
             let nameSection = dataProvider?.nameSection(indexPath.section)
             header.titleLabel.text = nameSection
             return header
@@ -379,7 +347,7 @@ extension TrackersViewController: TrackerCellDelegate {
     func trackerCompleated(id: UUID) {
         let trackerRecord = TrackerRecord(id: id, date: datePicker.date)
         do {
-           try trackerRecordStore.changeState(for: trackerRecord)
+            try trackerRecordStore.changeState(for: trackerRecord)
         } catch {
             print("[TrackersViewController - trackerCompleated()] Ошибка при сохранении выполненного трекера: \(error.localizedDescription)")
         }
@@ -430,15 +398,46 @@ extension TrackersViewController: DataProviderDelegate {
     func didUpdate(_ update: TrackerStoreUpdate) {
         
         collectionView.reloadData()
+        setupPlaceholderImage(emptySearch: false)
         
         // когда я использую performBatchUpdates приложение падает. С причиной так и не удалось разобраться
         
-//        collectionView.performBatchUpdates {
-//            print("Обновление получено: добавить секции: \(update.insertedSections), удалить секции: \(update.deletedSections), добавить элементы: \(update.insertedIndexes), удалить элементы: \(update.deletedIndexes)")
-//            collectionView.insertSections(update.insertedSections)
-//            collectionView.deleteSections(update.deletedSections)
-//            collectionView.insertItems(at: update.insertedIndexes)
-//            collectionView.deleteItems(at: update.deletedIndexes)
-//        }
+        //        collectionView.performBatchUpdates {
+        //            print("Обновление получено: добавить секции: \(update.insertedSections), удалить секции: \(update.deletedSections), добавить элементы: \(update.insertedIndexes), удалить элементы: \(update.deletedIndexes)")
+        //            collectionView.insertSections(update.insertedSections)
+        //            collectionView.deleteSections(update.deletedSections)
+        //            collectionView.insertItems(at: update.insertedIndexes)
+        //            collectionView.deleteItems(at: update.deletedIndexes)
+        //        }
     }
 }
+
+
+// для тестирования (удаление всех трекеров)
+//    func deleteAllTrackersAndCategories() {
+//        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
+//            return
+//        }
+//
+//        let context = appDelegate.persistentContainer.viewContext
+//
+//        let trackerFetchRequest: NSFetchRequest<TrackerCD> = TrackerCD.fetchRequest()
+//        let categoryFetchRequest: NSFetchRequest<TrackerCategoryCD> = TrackerCategoryCD.fetchRequest()
+//
+//        do {
+//            let trackers = try context.fetch(trackerFetchRequest)
+//            for tracker in trackers {
+//                context.delete(tracker)
+//            }
+//
+//            let categories = try context.fetch(categoryFetchRequest)
+//            for category in categories {
+//                context.delete(category)
+//            }
+//
+//            try context.save()
+//            print("Все трекеры и категории удалены")
+//        } catch {
+//            print("Ошибка при удалении трекеров и категорий: \(error)")
+//        }
+//    }

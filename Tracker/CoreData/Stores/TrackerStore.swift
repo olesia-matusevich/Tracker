@@ -19,6 +19,14 @@ final class TrackerStore: TrackerDataStore {
     private let context: NSManagedObjectContext
     let trackerCategoryStore = TrackerCategoryStore()
     
+    
+    // этот вариант инициализации был приведен у нас учебнике как правильный
+//    Спринт 15/24: 15 → Тема 4/7: Context → Урок 3/4 :
+//    "3.2 Добавьте convenience init(), который вызывает init(context:), получая контекст из AppDelegate. Например, так:
+//    (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext"
+    
+//    если не использовать этот вариант, то мне нужно в TreckerViewController получать context и передавать его дальше по цепочке?
+    
     convenience init() {
         let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
         self.init(context: context)
@@ -54,7 +62,6 @@ final class TrackerStore: TrackerDataStore {
                     trackerCoreData.schedule = nil
                 }
                 do {
-//                    print("трекер добавлен \(String(describing: trackerCoreData.name))")
                     try trackerCategoryStore.addNewTrackerCategory(trackerCoreData, category: category)
                     try context.save()
                 } catch {
@@ -63,7 +70,6 @@ final class TrackerStore: TrackerDataStore {
             }
         }
     }
-    
     
     var managedObjectContext: NSManagedObjectContext? {
         context

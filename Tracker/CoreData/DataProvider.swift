@@ -31,6 +31,7 @@ protocol DataProviderProtocol {
 }
 
 // MARK: - DataProvider
+
 final class DataProvider: NSObject {
 
     enum DataProviderError: Error {
@@ -59,7 +60,12 @@ final class DataProvider: NSObject {
                                                                   sectionNameKeyPath: "categories.name",
                                                                   cacheName: nil)
         fetchedResultsController.delegate = self
-        try? fetchedResultsController.performFetch()
+       
+        do {
+            try fetchedResultsController.performFetch()
+        } catch {
+            print("[DataProvider - fetchedResultsController] Ошибка при создании FRC: \(error.localizedDescription)")
+        }
         return fetchedResultsController
     }()
     
@@ -107,7 +113,11 @@ extension DataProvider: DataProviderProtocol {
     
     func deleteTracker(at indexPath: IndexPath) throws {
         let record = fetchedResultsController.object(at: indexPath)
-        try? dataStore.delete(record)
+        do {
+            try dataStore.delete(record)
+        } catch {
+            print("[DataProvider - deleteTracker()] Ошибка при удалении трекера: \(error.localizedDescription)")
+        }
     }
     
     func filteredTrackers(date: Date, title: String?){
@@ -143,6 +153,7 @@ extension DataProvider: DataProviderProtocol {
 }
 
 // MARK: - NSFetchedResultsControllerDelegate
+
 extension DataProvider: NSFetchedResultsControllerDelegate {
     func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         insertedIndexes = []
@@ -174,7 +185,6 @@ extension DataProvider: NSFetchedResultsControllerDelegate {
         case .insert:
             if let indexPath = newIndexPath {
                 insertedIndexes.append(indexPath)
-//                print("Элемент вставлен: \(indexPath), секция: \(indexPath.section)")
             }
         default:
             break
@@ -185,10 +195,8 @@ extension DataProvider: NSFetchedResultsControllerDelegate {
         switch type {
         case .delete:
             deletedSections.insert(sectionIndex)
-//            print("Раздел удален: \(sectionIndex), deletedSections: \(deletedSections)")
         case .insert:
             insertedSections.insert(sectionIndex)
-//            print("Раздел вставлен: \(sectionIndex), insertedSections: \(insertedSections)")
         default:
             break
         }

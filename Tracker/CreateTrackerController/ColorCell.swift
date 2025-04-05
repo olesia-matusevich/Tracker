@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ColorCell: UICollectionViewCell {
+final class ColorCell: UICollectionViewCell {
 
     let colorView: UIView = {
         let view = UIView()
@@ -21,8 +21,8 @@ class ColorCell: UICollectionViewCell {
         super.init(frame: frame)
         contentView.addSubview(colorView)
         NSLayoutConstraint.activate([
-            colorView.widthAnchor.constraint(equalToConstant: 40),
-            colorView.heightAnchor.constraint(equalToConstant: 40),
+            colorView.widthAnchor.constraint(equalTo: contentView.widthAnchor, constant: -9),
+            colorView.heightAnchor.constraint(equalTo: contentView.heightAnchor, constant: -9),
             colorView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             colorView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
         ])
