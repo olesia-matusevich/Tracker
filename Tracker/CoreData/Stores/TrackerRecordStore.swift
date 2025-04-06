@@ -10,19 +10,13 @@ import CoreData
 
 final class TrackerRecordStore {
     private let context: NSManagedObjectContext
+    private let calendar = Calendar.current
     
     // MARK: - Init
     
     init(context: NSManagedObjectContext) {
         self.context = context
     }
-    
-    // этот вариант инициализации был приведен у нас учебнике как правильный
-//    Спринт 15/24: 15 → Тема 4/7: Context → Урок 3/4 :
-//    "3.2 Добавьте convenience init(), который вызывает init(context:), получая контекст из AppDelegate. Например, так:
-//    (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext"
-    
-//    если не использовать этот вариант, то мне нужно в TreckerViewController получать context и передавать его дальше по цепочке?
     
     convenience init() {
         let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
@@ -43,13 +37,15 @@ final class TrackerRecordStore {
     func changeState(for record: TrackerRecord) throws {
         try performSync { context in
             Result {
+                let startOfDay = calendar.startOfDay(for: record.date)
+                
                 let trackerRecordFetch = TrackerRecordCD.fetchRequest()
-                trackerRecordFetch.predicate = NSPredicate(format: "id == %@ AND date == %@", record.id as NSUUID, record.date as NSDate)
+                trackerRecordFetch.predicate = NSPredicate(format: "id == %@ AND date == %@", record.id as NSUUID, startOfDay as NSDate)
                 let results = try context.fetch(trackerRecordFetch)
                 if results.isEmpty {
                     let trackerRecord = TrackerRecordCD(context: context)
                     trackerRecord.id = record.id
-                    trackerRecord.date = record.date
+                    trackerRecord.date = startOfDay
                 }
                 else {
                     results.forEach { result in
@@ -65,8 +61,10 @@ final class TrackerRecordStore {
         do {
             return try performSync { context in
                 Result {
+                    let startOfDay = calendar.startOfDay(for: record.date)
+                    
                     let trackerRecordFetch = TrackerRecordCD.fetchRequest()
-                    trackerRecordFetch.predicate = NSPredicate(format: "id == %@ AND date == %@", record.id as NSUUID, record.date as NSDate)
+                    trackerRecordFetch.predicate = NSPredicate(format: "id == %@ AND date == %@", record.id as NSUUID, startOfDay as NSDate)
                     let result = try context.fetch(trackerRecordFetch)
                     
                     if result.isEmpty {

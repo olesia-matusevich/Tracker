@@ -124,7 +124,7 @@ extension DataProvider: DataProviderProtocol {
         let calendar = Calendar.current
         var numberWeekDay = calendar.component(.weekday, from: date)
         if numberWeekDay == 1 {
-            numberWeekDay -= 1
+            numberWeekDay = 6
         } else {
             numberWeekDay -= 2
         }
