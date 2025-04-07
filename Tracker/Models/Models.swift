@@ -15,7 +15,7 @@ struct Tracker: Identifiable {
     let color: UIColor
 }
 
-enum ScheduleItems: String, CaseIterable {
+enum ScheduleItems: String, CaseIterable, Codable {
     case Monday = "Понедельник"
     case Tuesday = "Вторник"
     case Wednesday = "Среда"
