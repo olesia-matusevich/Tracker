@@ -17,6 +17,13 @@ final class CastomDayViewCell: UITableViewCell {
     
     let toggleSwitch = UISwitch()
     
+    let separatorView: UIView = {
+        let view = UIView()
+        view.backgroundColor = UIColor.castomGray
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupViews()
@@ -32,6 +39,7 @@ final class CastomDayViewCell: UITableViewCell {
         
         contentView.addSubview(dayLabel)
         contentView.addSubview(toggleSwitch)
+        contentView.addSubview(separatorView)
     }
     
     private func layoutViews() {
@@ -44,7 +52,16 @@ final class CastomDayViewCell: UITableViewCell {
             dayLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             
             toggleSwitch.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            toggleSwitch.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
+            toggleSwitch.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            
+            separatorView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            separatorView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            separatorView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            separatorView.heightAnchor.constraint(equalToConstant: 0.5)
         ])
+    }
+    
+    func hideSeparator(_ hide: Bool) {
+        separatorView.isHidden = hide
     }
 }

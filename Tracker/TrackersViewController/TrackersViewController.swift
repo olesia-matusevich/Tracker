@@ -327,7 +327,7 @@ extension TrackersViewController: CreateTrackerProtocol {
     
     func addTracker(for category: TrackerCategory) {
         let categoryName = category.name
-        guard let tracker = category.trackers.first else { return }
+        guard let tracker = category.trackers?.first else { return }
         do {
             try dataProvider?.addTracker(tracker, category: categoryName)
         } catch {

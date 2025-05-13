@@ -79,7 +79,8 @@ final class ScheduleViewController: UIViewController {
         tableView.register(CastomDayViewCell.self, forCellReuseIdentifier: "CustomDayCell")
         tableView.dataSource = self
         tableView.rowHeight = 75
-        tableView.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
+        tableView.separatorStyle = .none
+        //tableView.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
     }
     
     private func setupViews() {
@@ -129,6 +130,7 @@ extension ScheduleViewController: UITableViewDataSource {
             cell.layer.masksToBounds = true
             cell.layer.cornerRadius = 16
             cell.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
+            cell.hideSeparator(true)
         }
         cell.toggleSwitch.tag = indexPath.row
         cell.toggleSwitch.isOn = selectedDays.contains(daysOfWeek[indexPath.row])

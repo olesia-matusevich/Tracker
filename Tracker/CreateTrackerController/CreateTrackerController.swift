@@ -158,13 +158,18 @@ final class CreateTrackerController: UIViewController {
     private var needSchedule: Bool = false
     private var nameIsEmpty: Bool = true
     
-    private var selectedCategory: String = "Важное"
+    private var selectedCategory: String = ""
     private var selectedEmoji: String = ""
     private var selectedColor: UIColor = .clear
     private var selectedDays: [String] = []
     
     private var tableViewTopConstraint: NSLayoutConstraint?
     weak var createTrackerDelegate: CreateTrackerProtocol?
+    
+    private lazy var categoriesViewController: CategoriesViewController = {
+        let controller = CategoriesViewController()
+        return controller
+    }()
     
     // MARK: - Overrides methods
     
@@ -232,6 +237,11 @@ final class CreateTrackerController: UIViewController {
         tableView.rowHeight = 75
         tableView.separatorStyle = .none
     }
+    
+    func setupCategoryTitle(_ title: String) {
+        selectedCategory = title
+        checkFilling()
+        }
     
     private func checkFilling() {
         var fillingIsCorrect = false
@@ -410,6 +420,15 @@ extension CreateTrackerController: UITableViewDelegate {
             scheduleVC.selectScheduleDelegate = self
             present(scheduleVC, animated: true, completion: nil)
         }
+        if options[indexPath.row] == "Категория" {
+            categoriesViewController.setupCategoryTitle = { [weak self] title in
+                guard let self = self else { return }
+                setupCategoryTitle(title)
+                self.tableView.reloadData()
+            }
+            present(categoriesViewController, animated: true)
+        }
+        
     }
 }
 

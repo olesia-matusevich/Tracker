@@ -53,8 +53,9 @@ final class TrackerStore: TrackerDataStore {
                 } else {
                     trackerCoreData.schedule = nil
                 }
+                trackerCoreData.categories = try? findCategory(by: category, in: context)
+                
                 do {
-                    try trackerCategoryStore.addNewTrackerCategory(trackerCoreData, category: category)
                     try context.save()
                 } catch {
                     print("[TrackerStore - addNewTracker()] Ошибка при создании трекера:: \(error), \(error.localizedDescription)")
@@ -62,6 +63,14 @@ final class TrackerStore: TrackerDataStore {
             }
         }
     }
+    
+    private func findCategory(by name: String, in context: NSManagedObjectContext) throws -> TrackerCategoryCD? {
+         let request: NSFetchRequest<TrackerCategoryCD> = TrackerCategoryCD.fetchRequest()
+         request.predicate = NSPredicate(format: "name == %@", name)
+         
+         let category = try? context.fetch(request)
+         return category?.first
+     }
     
     var managedObjectContext: NSManagedObjectContext? {
         context
