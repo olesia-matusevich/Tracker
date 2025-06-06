@@ -15,7 +15,7 @@ protocol TrackerCategoryStoreDelegate: AnyObject {
 protocol CategoryDataProviderProtocol: AnyObject {
     var numberOfRows: Int { get }
     func object(at index: Index) -> TrackerCategory?
-    func addRecord(with title: String) throws
+    func addRecord(with title: String, sorting: Int16) throws
 }
 
 final class TrackerCategoryStore: NSObject {
@@ -29,9 +29,11 @@ final class TrackerCategoryStore: NSObject {
     
     private lazy var fetchedResultController: NSFetchedResultsController<TrackerCategoryCD> = {
           
-          let fetchRequest = TrackerCategoryCD.fetchRequest()
-          fetchRequest.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
-          
+        let fetchRequest = TrackerCategoryCD.fetchRequest()
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "sorting", ascending: true)]
+        let predicate = NSPredicate(format: "name != %@", PinnedCategory.title)
+        fetchRequest.predicate = predicate
+        
           let fetchResultController = NSFetchedResultsController(
               fetchRequest: fetchRequest,
               managedObjectContext: context,
@@ -62,11 +64,12 @@ final class TrackerCategoryStore: NSObject {
 }
 
 extension TrackerCategoryStore: CategoryDataProviderProtocol {
-    func addRecord(with title: String) throws {
+    func addRecord(with title: String, sorting: Int16) throws {
         try performSync { context in
             Result {
                 let trackerCategoryCD = TrackerCategoryCD(context: context)
                 trackerCategoryCD.name = title
+                trackerCategoryCD.sorting = sorting
                 try context.save()
             }
         }

@@ -97,7 +97,7 @@ final class SelectTrackerTypeController: UIViewController {
     }
     
     private func openCreateTrackerVC(needSchedule: Bool) {
-        let createTrackerVC = CreateTrackerController(needSchedule: needSchedule)
+        let createTrackerVC = CreateTrackerController(needSchedule: needSchedule, editableTracker: nil, numberOfDays: nil)
         if let tabBarController = self.view.window?.rootViewController as? TabBarController {
             guard let trackerViewController = tabBarController.viewControllers?.first as? TrackersViewController else { return }
             createTrackerVC.createTrackerDelegate = trackerViewController

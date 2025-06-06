@@ -1,0 +1,18 @@
+/* 
+  Localizable.strings
+  Tracker
+
+  Created by Alesia Matusevich on 18/05/2025.
+  
+*/
+"trackersTitle" = "Трекеры";
+"statisticsTitle" = "Статистика";
+"filter" = "Фильтры";
+"search" = "Поиск";
+"cancel" = "Отменить";
+"delete" = "Удалить";
+"deleteMessage" = "Уверены что хотите удалить этот трекер?";
+"trackers_screen_stub" = "Что будем отслеживать?";
+"trackersCompleted" = "Трекеров завершено";
+"statistics_screen_stub" = "Анализировать пока нечего";
+"trackers_empty_search" = "Ничего не найдено";

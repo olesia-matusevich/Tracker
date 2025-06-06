@@ -33,7 +33,6 @@ final class CategoryCell: UITableViewCell {
         titleLabel.font = UIFont.systemFont(ofSize: 17, weight: .regular)
         titleLabel.textColor = .castomBlack
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        
         return titleLabel
     }()
     

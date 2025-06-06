@@ -16,11 +16,14 @@ final class TabBarController: UITabBarController {
     
     private func setupTabs() {
         let trakcer = TrackersViewController()
-        trakcer.tabBarItem = UITabBarItem(title: "Трекеры", image: UIImage(systemName: "smallcircle.filled.circle.fill"), tag: 0)
+        let titleTrackers = NSLocalizedString("trackersTitle", comment: "")
+        trakcer.tabBarItem = UITabBarItem(title: titleTrackers, image: UIImage(systemName: "smallcircle.filled.circle.fill"), tag: 0)
         
         let statistics = StatisticsViewController()
-        statistics.tabBarItem = UITabBarItem(title: "Статистика", image: UIImage(systemName: "hare.fill"), tag: 1)
+        let titleStatistics = NSLocalizedString("statisticsTitle", comment: "")
+        statistics.tabBarItem = UITabBarItem(title: titleStatistics, image: UIImage(systemName: "hare.fill"), tag: 1)
         
         self.setViewControllers([trakcer, statistics], animated: true)
+        self.tabBar.backgroundColor = .castomBackground
     }
 }

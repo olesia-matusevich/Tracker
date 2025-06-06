@@ -29,7 +29,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         //window?.rootViewController = ViewController()
         window?.makeKeyAndVisible()
         
-        //DaysValueTransformer.register() 
+        ValueTransformer.setValueTransformer(UIColorValueTransformer(), forName: NSValueTransformerName("UIColorValueTransformer"))
+        
+        
+        AnalyticsService.activate()
         return true
     }
 

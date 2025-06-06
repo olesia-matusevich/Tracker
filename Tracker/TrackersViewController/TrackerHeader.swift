@@ -8,8 +8,8 @@
 import UIKit
 
 final class TrackerHeader: UICollectionReusableView {
-    static let reuseIdentifier = "TrackerHeader"
     
+    static let reuseIdentifier = "TrackerHeader"
     let titleLabel = UILabel()
     
     override init(frame: CGRect) {
@@ -25,7 +25,7 @@ final class TrackerHeader: UICollectionReusableView {
         addSubview(titleLabel)
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         titleLabel.font = UIFont.boldSystemFont(ofSize: 20)
-        titleLabel.textColor = .black
+        titleLabel.textColor = .castomBlack
         
         NSLayoutConstraint.activate([
             titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8),
