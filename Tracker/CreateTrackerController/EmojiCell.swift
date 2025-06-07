@@ -26,6 +26,10 @@ final class EmojiCell: UICollectionViewCell {
         ])
         backgroundView = UIView() // Добавляем backgroundView для выделения
     }
+    
+    func cellDidSelect() {
+        contentView.backgroundColor = .castomGraySelecledEmoji
+    }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")

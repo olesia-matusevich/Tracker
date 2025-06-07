@@ -2,8 +2,7 @@
 //  CategoriesViewController.swift
 //  Tracker
 //
-//  Created by Alesia Matusevich on 01/05/2025.
-// Created by Alesia Matusevich on 01/05/2025.
+//  Created by Alesia Matusevich on 01/05/2025
 
 import UIKit
 
@@ -35,7 +34,6 @@ final class CategoriesViewController: UIViewController {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.separatorStyle = .none
-        
         return tableView
     }()
     
@@ -48,7 +46,6 @@ final class CategoriesViewController: UIViewController {
             stubStackView.centerXAnchor.constraint(equalTo: stubContainer.centerXAnchor),
             stubStackView.centerYAnchor.constraint(equalTo: stubContainer.centerYAnchor)
         ])
-        
         return stubContainer
     }()
     
@@ -76,7 +73,6 @@ final class CategoriesViewController: UIViewController {
         stackView.spacing = 8
         stackView.alignment = .center
         stackView.translatesAutoresizingMaskIntoConstraints = false
-        
         return stackView
     }()
     

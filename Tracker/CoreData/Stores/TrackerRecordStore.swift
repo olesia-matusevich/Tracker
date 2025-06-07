@@ -98,5 +98,49 @@ final class TrackerRecordStore {
             return 0
         }
     }
+    
+    func numberOfCompletedTrackers() -> Int {
+        do {
+            return try performSync { context in
+                Result {
+                    let trackerRecordFetch = TrackerRecordCD.fetchRequest()
+                    trackerRecordFetch.resultType = .countResultType
+                    let result = try context.count(for: trackerRecordFetch)
+                    return result
+                }
+            }
+        }
+        catch {
+            print("Ошибка при подсчете записей: \(error.localizedDescription)")
+            return 0
+        }
+    }
+    
+    func completedTrackersId(date: Date) -> [UUID]? {
+        do {
+            return try performSync { context in
+                Result {
+                    let currentDate = Calendar.current.startOfDay(for: date)
+                    let trackerRecordFetch = TrackerRecordCD.fetchRequest()
+                    trackerRecordFetch.predicate = NSPredicate(format: "date == %@", currentDate as NSDate)
+                    let result = try context.fetch(trackerRecordFetch)
+                    
+                    if result.isEmpty {
+                        return nil
+                    }
+                    else {
+                        return result.compactMap { record in
+                            guard let id = record.id else { return nil }
+                            return id
+                        }
+                    }
+                }
+            }
+        }
+        catch {
+            print("[TrackerRecordStore - completedTrackersId()] - Ошибка нахождения записей: \(error.localizedDescription)")
+            return nil
+        }
+    }
 }
 

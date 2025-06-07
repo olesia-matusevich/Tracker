@@ -8,11 +8,23 @@
 import UIKit
 
 struct Tracker: Identifiable {
-    let id: UUID = UUID()
+    var id: UUID = UUID()
     let name: String
     let emoji: String
     let schedule: [ScheduleItems]?
     let color: UIColor
+    let isPinned: Bool
+    let originalCategory: String
+    
+    init(id: UUID = UUID(), name: String, color: UIColor, emoji: String, schedule: [ScheduleItems]?, isPinned: Bool = false, originalCategory: String = "") {
+        self.id = id
+        self.name = name
+        self.color = color
+        self.emoji = emoji
+        self.schedule = schedule
+        self.isPinned = isPinned
+        self.originalCategory = originalCategory
+    }
 }
 
 enum ScheduleItems: String, CaseIterable, Codable {
@@ -33,6 +45,9 @@ struct TrackerCategory {
 struct TrackerRecord: Hashable {
     let id: UUID
     let date: Date
+}
+enum PinnedCategory {
+    static let title = "Закреплённое"
 }
 
 let daysOfWeek: [String] = [

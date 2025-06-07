@@ -42,7 +42,7 @@ final class CategoriesViewModel: CategoriesViewModelProtocol {
     
     func addRecord(with title: String) {
         do {
-            try categoryDataProvider.addRecord(with: title)
+            try categoryDataProvider.addRecord(with: title, sorting: 1)
         }
         catch {
             print("[CategoriesViewModel - addRecord()] - Ошибка добавления новой записи.")

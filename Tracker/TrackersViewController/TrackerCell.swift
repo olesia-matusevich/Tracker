@@ -11,7 +11,23 @@ final class TrackerCell: UICollectionViewCell {
     
     // MARK: - Private properties
     
+    private lazy var pinView: UIImageView = {
+        let image = UIImage(named: "pin")
+        let imageView = UIImageView(image: image)
+        imageView.tintColor = .white
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        //imageView.isHidden = false
+        imageView.isHidden = !(isPinned ?? false)
+        return imageView
+    }()
+    
+    private let mainContainerView = UIView()
+    private let analyticsService = AnalyticsService()
+    
+    // MARK: - Public properties
+    
     var trackerID: UUID?
+    var isPinned: Bool?
     
     var emojiLabel: UILabel = {
         let label = UILabel()
@@ -34,7 +50,7 @@ final class TrackerCell: UICollectionViewCell {
     var daysCountLabel : UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 12)
-        label.textColor = .black
+        label.textColor = .castomBlack
         return label
     }()
     
@@ -52,10 +68,6 @@ final class TrackerCell: UICollectionViewCell {
         button.addTarget(self, action: #selector(completeButtonTapped), for: .touchUpInside)
         return button
     }()
-    
-    private let mainContainerView = UIView()
-    
-    // MARK: - Public properties
     
     var containerView = UIView()
     static let reuseIdentifier = "TrackerCell"
@@ -87,6 +99,7 @@ final class TrackerCell: UICollectionViewCell {
         guard let id = trackerID else { return }
         delegate?.trackerCompleated(id: id)
         let dayAmount = delegate?.countRecordsByID(id: id) ?? 0
+        analyticsService.report(event: .click, screen: .main, item: .track)
         updateDayCounterLabel(dayAmount: dayAmount)
     }
     
@@ -97,6 +110,7 @@ final class TrackerCell: UICollectionViewCell {
         
         mainContainerView.addSubview(containerView)
         containerView.addSubview(emojiLabel)
+        containerView.addSubview(pinView)
         containerView.addSubview(nameLabel)
         mainContainerView.addSubview(daysCountLabel)
         mainContainerView.addSubview(completeButton)
@@ -111,6 +125,7 @@ final class TrackerCell: UICollectionViewCell {
         daysCountLabel.translatesAutoresizingMaskIntoConstraints = false
         completeButton.translatesAutoresizingMaskIntoConstraints = false
         mainContainerView.translatesAutoresizingMaskIntoConstraints = false
+        pinView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
             containerView.topAnchor.constraint(equalTo: mainContainerView.topAnchor),
@@ -122,6 +137,11 @@ final class TrackerCell: UICollectionViewCell {
             emojiLabel.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 12),
             emojiLabel.heightAnchor.constraint(equalToConstant: 24),
             emojiLabel.widthAnchor.constraint(equalToConstant: 24),
+            
+            pinView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -4),
+            pinView.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 8),
+            pinView.heightAnchor.constraint(equalToConstant: 34),
+            pinView.widthAnchor.constraint(equalToConstant: 34),
             
             nameLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 12),
             nameLabel.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -12),
@@ -138,28 +158,19 @@ final class TrackerCell: UICollectionViewCell {
             mainContainerView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 0),
             mainContainerView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: 0),
             mainContainerView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
-            
         ])
     }
 
     private func updateDayCounterLabel(dayAmount: Int) {
-        daysCountLabel.text = daysString(amoumnt: dayAmount)
+        daysCountLabel.text = String.localizedStringWithFormat(
+            NSLocalizedString("numberOfDays", comment: ""),
+            dayAmount)
     }
     
     func daysString(amoumnt dayAmount: Int) -> String {
-        let lastDigit = dayAmount % 10
-        let lastTwoDigits = dayAmount % 100
-        
-        let word: String
-        if lastTwoDigits >= 11 && lastTwoDigits <= 14 {
-            word = "дней"
-        } else if lastDigit == 1 {
-            word = "день"
-        } else if lastDigit >= 2 && lastDigit <= 4 {
-            word = "дня"
-        } else {
-            word = "дней"
-        }
-        return "\(dayAmount) \(word)"
+        let daysString = String.localizedStringWithFormat(
+        NSLocalizedString("numberOfDays", comment: ""),
+        dayAmount)
+        return daysString
     }
 }
