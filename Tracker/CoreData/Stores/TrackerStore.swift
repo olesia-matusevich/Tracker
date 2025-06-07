@@ -143,7 +143,6 @@ final class TrackerStore: TrackerDataStore {
                 tracker.categories = previousCategory
             } else {
                 tracker.isPinned.toggle()
-                //tracker.isPinned = true
                 let request = TrackerCategoryCD.fetchRequest()
                 request.sortDescriptors =  [NSSortDescriptor(key: "sorting", ascending: true)]
                 request.predicate = NSPredicate(format: "name == %@", PinnedCategory.title)

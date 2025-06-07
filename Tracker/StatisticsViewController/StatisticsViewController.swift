@@ -107,6 +107,18 @@ final class StatisticsViewController: UIViewController {
         statisticView.addGradientBorder(colors: [.trackerColor01, .trackerColor09, .trackerColor03], width: 1, radius: 16)
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        updateStatisticView()
+    }
+
+    private func updateStatisticView() {
+        let count = numberOfCompletedTrackers
+        numberLabel.text = "\(count)"
+        statisticView.isHidden = (count == 0)
+        stubStackView.isHidden = (count > 0)
+    }
+    
     // MARK: - Private Methods
    
     private func setupUI() {

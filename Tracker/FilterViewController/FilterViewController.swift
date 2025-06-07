@@ -7,6 +7,8 @@
 
 import UIKit
 
+// MARK: - FilterModes
+
 enum FilterModes: String {
     case all = "Все трекеры"
     case today = "Трекеры на сегодня"
@@ -14,12 +16,18 @@ enum FilterModes: String {
     case notCompleted = "Не завершенные"
 }
 
+// MARK: - FilterDelegate
+
 protocol FilterDelegate: AnyObject {
     func filterTracker(with mode: FilterModes, date: Date)
 }
 
+// MARK: - FilterViewController
+
 final class FilterViewController: UIViewController {
 
+    // MARK: - UI
+    
     private lazy var tableView: UITableView = {
         let tableView = UITableView()
         tableView.backgroundColor = .castomGrayBackground
@@ -42,6 +50,8 @@ final class FilterViewController: UIViewController {
     
     private let navigationBar = UINavigationBar()
     
+    // MARK: - Properties
+    
     var filterSelected: (() -> Void)?
     
     private var filters: [FilterCellModel] = [
@@ -51,6 +61,8 @@ final class FilterViewController: UIViewController {
         FilterCellModel(mode: FilterModes.notCompleted, isSelected: false)
     ]
 
+    // MARK: - Lifecycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
@@ -58,6 +70,8 @@ final class FilterViewController: UIViewController {
         setupConstraints()
         setupFilters()
     }
+    
+    // MARK: - Setup
     
     private func setupFilters() {
         guard let savedFilter = UserDefaults.standard.string(forKey: "filter") else { return }
@@ -96,8 +110,9 @@ final class FilterViewController: UIViewController {
         navigationBar.isTranslucent = false
         navigationBar.shadowImage = UIImage()
     }
-    
 }
+
+// MARK: - UITableViewDelegate
 
 extension FilterViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
